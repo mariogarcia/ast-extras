@@ -4,6 +4,9 @@ import spock.lang.Specification
 import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.tools.ast.TransformTestHelper
 
+/**
+ * @author marioggar
+**/
 class WithPoolAstSpec extends Specification{
 
 	def "Testing a method annotated with WithPool"(){
