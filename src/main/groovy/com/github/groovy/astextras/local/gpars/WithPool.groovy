@@ -13,6 +13,8 @@ import org.codehaus.groovy.transform.GroovyASTTransformationClass
  * 
  * You can establish the number of threads needed for the current execution.
  *
+ * @author marioggar
+ *
 **/
 @Target([ElementType.METHOD])
 @Retention(RetentionPolicy.SOURCE)
