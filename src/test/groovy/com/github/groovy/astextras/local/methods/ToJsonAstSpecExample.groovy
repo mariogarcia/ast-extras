@@ -6,11 +6,10 @@ package com.github.groovy.astextras.local.methods
  * @author marioggar
 **/
 @ToJson()
-class Silly{
- /* nameToMD5() */
-	@ToMD5()
+class ToJsonAstSpecExample{
+	
 	String name
 	String country
 
-	Silly child
+	ToJsonAstSpecExample child
 }
