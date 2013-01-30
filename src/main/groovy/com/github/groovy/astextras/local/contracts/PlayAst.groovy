@@ -35,11 +35,13 @@ class PlayAst implements ASTTransformation{
 		Statement firstCode2Add = executeMethod.getCode()
 	 /* Getting the former code */	
 		Statement formerCode = methodNode.getCode()
-	 /* Adding first the first code to add :S */
+	 /* Building the new method code */
 		Statement newCode = new AstBuilder().buildFromSpec{
 			block{
-				firstCode2Add	
-				formerCode
+	 		 /* Adding first the first code to add :S */
+				expression.add firstCode2Add	
+	 		 /* Adding the rest of the code */
+				expression.add formerCode
 			}
 		}.find{it}
 	 /* Now we put the new code */

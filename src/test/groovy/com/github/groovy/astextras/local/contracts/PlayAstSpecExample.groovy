@@ -6,17 +6,13 @@ package com.github.groovy.astextras.local.contracts
 **/
 class PlayAstSpecExample {
 
-	@Play(PreConditionAction)
+	@Play(PlayAstSpecExample)
 	def mySimpleMethod(){
 		message
 	}
-}
 
-/**
- * This action exposes a given result number
-**/
-class PreConditionAction{
 	def execute(){
 		def message = "This is cool!!! isn't?"
 	}
 }
+
