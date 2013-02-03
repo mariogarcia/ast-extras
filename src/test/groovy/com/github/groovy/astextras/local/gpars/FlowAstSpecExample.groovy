@@ -11,5 +11,7 @@ class FlowAstSpecExample {
 		task{ flow.c = flow.a + flow.b}
 		task{ flow.d = flow.a * flow.b}
 		task{ flow.e = flow.c + flow.d}
+
+		flow.e
 	}
 }

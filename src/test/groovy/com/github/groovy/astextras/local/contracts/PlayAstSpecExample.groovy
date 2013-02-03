@@ -11,7 +11,9 @@ class PlayAstSpecExample {
 		message
 	}
 
-	def execute(){
+	void play(params){
+		def amigo = "Nop"
+			println amigo
 		def message = "This is cool!!! isn't?"
 	}
 }
