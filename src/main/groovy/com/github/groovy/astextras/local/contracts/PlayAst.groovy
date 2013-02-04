@@ -43,17 +43,22 @@ class PlayAst extends ExceptionFriendlyAst{
 			throw new Exception("Check that the play method exists and its return type is void")
 		}
 		def firstCode2Add = playMethod.code
-		if (!(firstCode2Add instanceof BlockStatement)){
-			sourceUnit.addError(new SyntaxException("BlockStatement required instead of ${firstCode2Add}",0,0))
-		}
 	 /* Getting the former code */	
 		Statement formerCode = methodNode.getCode()
 	 /* Building the new method code */
 		Statement newCode = new AstBuilder().buildFromSpec{
 			block{
 	 		 /* Adding first the first code to add :S */
-				firstCode2Add.statements.each{st->
-					expression.add st 
+				if (firstCode2Add instanceof BlockStatement){
+				 /* Getting all the statements inside the block statement and 
+					apply them to the final code */
+					firstCode2Add.statements.each{st->
+						expression.add st 
+					}
+				} else {
+				 /* Still don't know why sometimes it is a returnStatement when 
+					the method is always void */
+					expression.add firstCode2Add
 				}
 	 		 /* Adding the rest of the code */
 				expression.add formerCode
