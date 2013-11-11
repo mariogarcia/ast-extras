@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy
 
 import org.codehaus.groovy.transform.GroovyASTTransformationClass
 
-@Target([ElementType.METHOD])
+@Target([ElementType.TYPE])
 @Retention(RetentionPolicy.SOURCE)
 @GroovyASTTransformationClass(['com.github.groovy.astextras.local.strict.BlameAccessModifiersAst'])
 @interface BlameAccessModifiers {}
