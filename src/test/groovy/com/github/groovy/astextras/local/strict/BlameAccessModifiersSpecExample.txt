@@ -5,7 +5,7 @@ package com.github.groovy.astextras.local.strict
  * error saying that we shouldnt be using access modifiers
  */
 @BlameAccessModifiers
-class BlameAccessModifiersSpecSample {
+class BlameAccessModifiersSpecExample {
 
     private void doSomething() {
         println 'Groovy doesnt care about access modifiers'

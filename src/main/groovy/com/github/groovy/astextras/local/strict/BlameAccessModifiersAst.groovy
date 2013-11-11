@@ -1,9 +1,16 @@
 package com.github.groovy.astextras.local.strict
 
+import java.lang.reflect.Modifier
+
 import org.codehaus.groovy.ast.ASTNode
+import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.AnnotationNode
+
+import org.codehaus.groovy.syntax.SyntaxException
+
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.control.CompilePhase
+
 import org.codehaus.groovy.transform.ASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
 
@@ -22,8 +29,27 @@ class BlameAccessModifiersAst implements ASTTransformation {
         if (!astNodes) return // Only if there is any annotation
         if (!astNodes[0] || !astNodes[1]) return //  astNodes[1] is the declaring class
         if (! (astNodes[0] instanceof AnnotationNode)) return
+        if (! (astNodes[1] instanceof ClassNode)) return
         if (astNodes[0].classNode?.name != BlameAccessModifiers.class.name) return
 
+     /* Taking the type reference */
+        ClassNode typeToInspect = astNodes[1]
+
+     /* Looping through all the type methods */
+        typeToInspect.allDeclaredMethods.each { methodNode ->
+
+            def methodName = methodNode.name
+            def isItPrivate = methodNode.modifiers == Modifier.PRIVATE
+
+            if (isItPrivate) {
+                sourceUnit.addError(
+                    new SyntaxException(
+                        "Why are you using an access modifier ?",0,0
+                    )
+                )
+            }
+
+        }
 
     }
 
