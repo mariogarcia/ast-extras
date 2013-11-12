@@ -24,27 +24,40 @@ import org.codehaus.groovy.transform.GroovyASTTransformation
 @GroovyASTTransformation(phase=CompilePhase.INSTRUCTION_SELECTION)
 class BlameAccessModifiersAst implements ASTTransformation {
 
+    def checkNodes(annotationElement, annotatedElement) {
+
+        return
+            annotationElement &&
+            annotatedElement &&
+            AnnotationNode.isInstance(annotationElement) &&
+            ClassNode.isInstance(annotatedElement) &&
+            BlameAccessModifiers.isInstance(annotationElement.classNode)
+
+    }
+
     void visit(ASTNode[] astNodes, SourceUnit sourceUnit) {
 
-        if (!astNodes) return // Only if there is any annotation
-        if (!astNodes[0] || !astNodes[1]) return //  astNodes[1] is the declaring class
-        if (! (astNodes[0] instanceof AnnotationNode)) return
-        if (! (astNodes[1] instanceof ClassNode)) return
-        if (astNodes[0].classNode?.name != BlameAccessModifiers.class.name) return
+        def annotationElement = astNodes[0]
+        def annotatedElement = astNodes[1]
+        def isItValid = validateNodes(annotationElement, annotatedElement)
 
-     /* Taking the type reference */
-        ClassNode typeToInspect = astNodes[1]
+        if (!isItValid) return
 
-     /* Looping through all the type methods */
-        typeToInspect.allDeclaredMethods.each { methodNode ->
+        annotatedElement.allDeclaredMethods.each { methodNode ->
 
             def methodName = methodNode.name
             def isItPrivate = methodNode.modifiers == Modifier.PRIVATE
 
             if (isItPrivate) {
+
+                def line = methodNode.lineNumber
+                def column = methodNode.columnNumber
+
                 sourceUnit.addError(
                     new SyntaxException(
-                        "Why are you using an access modifier ?",0,0
+                        "Why are you using 'private' in $methodName?",
+                        line,
+                        column
                     )
                 )
             }
