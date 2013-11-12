@@ -22,7 +22,7 @@ import org.codehaus.groovy.transform.GroovyASTTransformation
  * @author marioggar
  */
 @GroovyASTTransformation(phase=CompilePhase.INSTRUCTION_SELECTION)
-class BlameAccessModifiersAst implements ASTTransformation {
+class BlamePrivateModifiersAst implements ASTTransformation {
 
     def checkNodes(annotationElement, annotatedElement) {
 
@@ -31,7 +31,7 @@ class BlameAccessModifiersAst implements ASTTransformation {
             annotatedElement &&
             AnnotationNode.isInstance(annotationElement) &&
             ClassNode.isInstance(annotatedElement) &&
-            BlameAccessModifiers.isInstance(annotationElement.classNode)
+            BlamePrivateModifiers.isInstance(annotationElement.classNode)
 
     }
 

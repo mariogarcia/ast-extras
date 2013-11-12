@@ -9,5 +9,5 @@ import org.codehaus.groovy.transform.GroovyASTTransformationClass
 
 @Target([ElementType.TYPE])
 @Retention(RetentionPolicy.SOURCE)
-@GroovyASTTransformationClass(['com.github.groovy.astextras.local.strict.BlameAccessModifiersAst'])
-@interface BlameAccessModifiers {}
+@GroovyASTTransformationClass(['com.github.groovy.astextras.local.strict.BlamePrivateModifiersAst'])
+@interface BlamePrivateModifiers {}

@@ -7,7 +7,7 @@ import org.codehaus.groovy.syntax.SyntaxException
 import org.codehaus.groovy.control.CompilationFailedException
 import org.codehaus.groovy.tools.ast.TransformTestHelper
 
-class BlameAccessModifiersSpec extends Specification {
+class BlamePrivateModifiersSpec extends Specification {
 
 	static final BASE = "./src/test/groovy/"
     /**
@@ -30,7 +30,7 @@ class BlameAccessModifiersSpec extends Specification {
 
     def 'Throwing an exception when finding an access modifier'() {
         when: "Enabling transformation"
-			def annotatedInstance = getClassToTest(BlameAccessModifiersAst).newInstance()
+			def annotatedInstance = getClassToTest(BlamePrivateModifiersAst).newInstance()
         then:
             thrown(CompilationFailedException)
     }
