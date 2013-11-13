@@ -1,6 +1,6 @@
 package com.github.groovy.astextras.local.strict
 
-import java.lang.reflect.Modifier
+import static java.lang.reflect.Modifier.PRIVATE
 
 import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.ClassNode
@@ -24,45 +24,36 @@ import org.codehaus.groovy.transform.GroovyASTTransformation
 @GroovyASTTransformation(phase=CompilePhase.INSTRUCTION_SELECTION)
 class BlamePrivateModifiersAst implements ASTTransformation {
 
-    def checkNodes(annotationElement, annotatedElement) {
-
-        return
-            annotationElement &&
-            annotatedElement &&
-            AnnotationNode.isInstance(annotationElement) &&
-            ClassNode.isInstance(annotatedElement) &&
-            BlamePrivateModifiers.isInstance(annotationElement.classNode)
-
-    }
-
     void visit(ASTNode[] astNodes, SourceUnit sourceUnit) {
 
-        def annotationElement = astNodes[0]
-        def annotatedElement = astNodes[1]
-        def isItValid = validateNodes(annotationElement, annotatedElement)
+        if (!astNodes) return
 
-        if (!isItValid) return
+        def (annotation, annotatedType) = astNodes[0..1]
+        def nodesAreValid = checkNodes(annotation, annotatedType)
 
-        annotatedElement.allDeclaredMethods.each { methodNode ->
+        if (!nodesAreValid) return
 
-            def methodName = methodNode.name
-            def isItPrivate = methodNode.modifiers == Modifier.PRIVATE
-
-            if (isItPrivate) {
-
-                def line = methodNode.lineNumber
-                def column = methodNode.columnNumber
-
-                sourceUnit.addError(
-                    new SyntaxException(
-                        "Why are you using 'private' in $methodName?",
-                        line,
-                        column
+        annotatedType.allDeclaredMethods.each { methodNode ->
+            methodNode.with {
+                if (modifiers == PRIVATE) {
+                    sourceUnit.addError(
+                        new SyntaxException(
+                            "Why are you using 'private' in $name?",
+                            lineNumber,
+                            columnNumber
+                        )
                     )
-                )
+                }
             }
-
         }
+    }
+
+    boolean checkNodes(AnnotationNode annotation, ClassNode annotatedType) {
+
+        annotation &&
+        annotatedType &&
+        BlamePrivateModifiers.isInstance(annotation.classNode.declaredClass) &&
+        ClassNode.isInstance(annotatedType)
 
     }
 
