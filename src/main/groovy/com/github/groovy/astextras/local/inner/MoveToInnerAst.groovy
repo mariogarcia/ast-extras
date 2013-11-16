@@ -21,15 +21,39 @@ class MoveToInnerAst implements ASTTransformation {
         if (!astNodes) return
 		if (!astNodes[0] || !astNodes[1]) return
 		if (!(astNodes[0] instanceof AnnotationNode)) return
-		if (astNodes[0].classNode?.name != MoveToInnerAst.class.name) return
+		if (astNodes[0].classNode?.name != MoveToInner.class.name) return
 		if (!(astNodes[1] instanceof MethodNode)) return
 
         MethodNode methodNode = astNodes[1]
+        ClassNode declaringClass = methodNode.declaringClass
         String innerClassName = astNodes[0].members?.getAt('value')?.text
-        ClassNode classNode = new AstBuilder().buildFromSpec {
-            innerClass 'Foo', ClassNode.ACC_PUBLIC, { }
-        }.find { it }
+        String outerClassName = astNodes[1].declaringClass.nameWithoutPackage
+        String innerClassFullName = outerClassName + '$' + innerClassName
 
+        def innerClassNode = new AstBuilder().buildFromSpec {
+            innerClass innerClassFullName, ClassNode.ACC_PUBLIC, {
+                classNode outerClassName, ClassNode.ACC_PUBLIC, {
+                    classNode Object
+                    interfaces {
+                        classNode GroovyObject
+                    }
+                    mixins { }
+                }
+                classNode Object
+                interfaces {
+                   classNode GroovyObject
+                }
+                mixins { }
+            }
+        }.first()
+
+        innerClassNode.addMethod(methodNode)
+        methodNode.declaringClass = innerClassNode
+
+        declaringClass.with {
+            compileUnit.addGeneratedInnerClass(innerClassNode)
+            compileUnit.addClassNodeToCompile(innerClassNode, sourceUnit)
+        }
 
     }
 

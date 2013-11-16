@@ -19,13 +19,10 @@ repositories {
 }
 
 dependencies {
-    groovy group: 'org.codehaus.groovy', name: 'groovy', version: '1.8.6'
-// TODO some of this dependencies are not necessary
-	runtime 'org.codehaus.gpars:gpars:1.0-beta-2'
+    compile 'org.codehaus.groovy:groovy:2.0.8'
 	compile 'org.codehaus.gpars:gpars:1.0-beta-2'
-	testCompile 'org.codehaus.gpars:gpars:1.0-beta-2'
 
-	testCompile 'org.spockframework:spock-core:0.6-groovy-1.8' 
+	testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
 }
 
 // TODO maybe I should try with the latest gradle distribution
