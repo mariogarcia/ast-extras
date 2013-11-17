@@ -9,11 +9,13 @@ import org.codehaus.groovy.ast.builder.AstBuilder
 
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.control.CompilePhase
+import org.codehaus.groovy.control.CompilationUnit
+import org.codehaus.groovy.control.CompilerConfiguration
 
 import org.codehaus.groovy.transform.ASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
 
-@GroovyASTTransformation(phase=CompilePhase.INSTRUCTION_SELECTION)
+@GroovyASTTransformation(phase=CompilePhase.SEMANTIC_ANALYSIS)
 class MoveToInnerAst implements ASTTransformation {
 
     void visit(ASTNode[] astNodes, SourceUnit sourceUnit) {
@@ -27,7 +29,7 @@ class MoveToInnerAst implements ASTTransformation {
         MethodNode methodNode = astNodes[1]
         ClassNode declaringClass = methodNode.declaringClass
         String innerClassName = astNodes[0].members?.getAt('value')?.text
-        String outerClassName = astNodes[1].declaringClass.nameWithoutPackage
+        String outerClassName = astNodes[1].declaringClass
         String innerClassFullName = outerClassName + '$' + innerClassName
 
         def innerClassNode = new AstBuilder().buildFromSpec {
@@ -47,13 +49,13 @@ class MoveToInnerAst implements ASTTransformation {
             }
         }.first()
 
-        innerClassNode.addMethod(methodNode)
-        methodNode.declaringClass = innerClassNode
+        def compilerConfiguration = declaringClass.compileUnit.config
+        def compilationUnit = new CompilationUnit(compilerConfiguration)
 
-        declaringClass.with {
-            compileUnit.addGeneratedInnerClass(innerClassNode)
-            compileUnit.addClassNodeToCompile(innerClassNode, sourceUnit)
-        }
+        compilationUnit.addClassNode(innerClassNode)
+        compilationUnit.compile()
+
+        declaringClass.compileUnit.addClass(innerClassNode)
 
     }
 

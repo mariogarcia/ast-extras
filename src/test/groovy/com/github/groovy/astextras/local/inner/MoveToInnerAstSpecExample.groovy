@@ -7,4 +7,8 @@ class MoveToInnerAstSpecExample {
         'it worked!'
     }
 
+    // def getFromInnerClass() {
+    //     new Foo().myMethod()
+    // }
+
 }
