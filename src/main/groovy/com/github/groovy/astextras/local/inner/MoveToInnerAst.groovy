@@ -73,13 +73,18 @@ class MoveToInnerAst implements ASTTransformation {
 
         innerClassNode.addMethod(cloneNode(methodNode))
 
-        def compilerConfiguration = sourceUnit.getAST().getUnit().config
-        def compilationUnit =
+        methodNode.declaringClass.module.addClass(innerClassNode)
+
+        /*
+            def compilerConfiguration = sourceUnit.getAST().getUnit().config
+            def compilationUnit =
             new CompilationUnit(compilerConfiguration).with {
                 addClassNode(outerClassNode)
                 addClassNode(innerClassNode)
                 compile()
             }
+
+        */
 
     }
 
