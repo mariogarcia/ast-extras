@@ -25,28 +25,34 @@ class InspectMethodParametersAst implements ASTTransformation{
         ClassNode classNode = declaringMethod.declaringClass
         String parametersMethodName = "${declaringMethod.name}Parameters"
 
-        def methodExposingParameters = new AstBuilder().buildFromSpec {
-            method parametersMethodName, ClassNode.ACC_PUBLIC, Object, {
-                parameters {}
-                exceptions {}
-                block {
-                    returnStatement {
-                        map {
-                            mapEntry {
-                                constant 'x'
-                                constant 1
-                            }
-                            mapEntry {
-                                constant 'y'
-                                constant 2
-                            }
-                        }
+        def returnStatement = new AstBuilder().buildFromSpec {
+            returnStatement {
+                map {
+                    mapEntry {
+                        constant 'x'
+                        constant 1
+                    }
+                    mapEntry {
+                        constant 'y'
+                        constant 2
                     }
                 }
-                annotations {}
             }
-	    }
-        classNode.addMethod(methodExposingParameters[0])
+	    }.first()
+
+        Parameter[] parameters = []
+		ClassNode[] exceptions = []
+
+        def addedMethodNode = new MethodNode(
+			parametersMethodName,
+			ClassNode.ACC_PUBLIC,
+			new ClassNode(Map),
+			parameters,
+			exceptions,
+		    returnStatement
+		)
+
+        classNode.addMethod(addedMethodNode)
     }
 
 }
