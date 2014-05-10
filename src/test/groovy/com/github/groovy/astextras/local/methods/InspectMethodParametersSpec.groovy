@@ -12,9 +12,9 @@ class InspectMethodParametersSpec extends AstBaseSpec{
         when: 'Building an instance of the example'
             def classToTest = getClassToTest(InspectMethodParametersAst)
 			def annotatedInstance = classToTest.newInstance()
-            def parametersMap = annotatedInstance.tellmeParameters()
+            def parametersNames = annotatedInstance.tellmeParameters()
         then: 'At least we should be able to get the parameter names'
-            ['x','y'].every{ it in parametersMap.keySet() }
+            ['x','y'].every{ it in parametersNames }
         and: 'Of course the method executes as expected'
             annotatedInstance.tellme(1,2) == 3
     }

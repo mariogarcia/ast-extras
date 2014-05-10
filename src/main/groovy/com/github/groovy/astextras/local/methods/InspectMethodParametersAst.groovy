@@ -27,14 +27,9 @@ class InspectMethodParametersAst implements ASTTransformation{
 
         def returnStatement = new AstBuilder().buildFromSpec {
             returnStatement {
-                map {
-                    mapEntry {
-                        constant 'x'
-                        constant 1
-                    }
-                    mapEntry {
-                        constant 'y'
-                        constant 2
+                list {
+                    declaringMethod.parameters.each {
+                        constant it.name
                     }
                 }
             }
@@ -46,7 +41,7 @@ class InspectMethodParametersAst implements ASTTransformation{
         def addedMethodNode = new MethodNode(
 			parametersMethodName,
 			ClassNode.ACC_PUBLIC,
-			new ClassNode(Map),
+			new ClassNode(List),
 			parameters,
 			exceptions,
 		    returnStatement

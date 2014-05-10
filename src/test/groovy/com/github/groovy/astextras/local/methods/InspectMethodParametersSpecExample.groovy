@@ -7,6 +7,6 @@ class InspectMethodParametersSpecExample {
         return x + y
     }
 
-    // Map getTellmeParameters()
+    // List getTellmeParameters()
 
 }
