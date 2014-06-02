@@ -6,6 +6,7 @@ import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.MapExpression
 import org.codehaus.groovy.ast.expr.ClosureExpression
+import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.DeclarationExpression
@@ -46,7 +47,9 @@ class ClosureScopeAst extends AbstractASTTransformation {
         MapExpression mapExpression         = arguments.expressions.first()
         ClosureExpression closureExpression = arguments.expressions.last()
 
-        map
+        ConstantExpression ve = mapExpression.mapEntryExpressions.valueExpression.first()
+
+        println ve.value
         //ONCE WE'VE CHANGED ARGUMENTS
         //arguments.arguments = [changedMap, changedClosure]
 
