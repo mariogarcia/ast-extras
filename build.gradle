@@ -20,7 +20,7 @@ repositories {
 
 dependencies {
     compile 'org.codehaus.groovy:groovy:2.0.8'
-	compile 'org.codehaus.gpars:gpars:1.0-beta-2'
+	compile 'org.codehaus.gpars:gpars:1.1.0'
 
 	testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
 }
@@ -28,6 +28,12 @@ dependencies {
 // TODO maybe I should try with the latest gradle distribution
 task createWrapper(type: Wrapper) {
     gradleVersion = '1.0-rc-3'
+}
+
+task('console', type: JavaExec) {
+    main = 'groovy.ui.Console'
+    project.dependencies.add("compile", 'org.codehaus.groovy:groovy:2.0.8')
+    classpath = sourceSets.main.runtimeClasspath
 }
 
 

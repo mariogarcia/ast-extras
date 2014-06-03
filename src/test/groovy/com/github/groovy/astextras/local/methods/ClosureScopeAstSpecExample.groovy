@@ -10,7 +10,7 @@ import org.codehaus.groovy.control.CompilePhase
 class ClosureScopeAstSpecExample {
 
     def check(Map map, Closure execution) {
-        return map.with(execution)
+        map.with(execution)
     }
 
     @ClosureScope

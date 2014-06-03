@@ -1,9 +1,15 @@
 package com.github.groovy.astextras.local.methods
 
 import org.codehaus.groovy.ast.ASTNode
+import org.codehaus.groovy.ast.ClassHelper
+import org.codehaus.groovy.ast.GroovyCodeVisitor
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.AnnotationNode
+import org.codehaus.groovy.ast.Parameter
+import org.codehaus.groovy.ast.Variable
+import org.codehaus.groovy.ast.VariableScope
 import org.codehaus.groovy.ast.builder.AstBuilder
+import org.codehaus.groovy.ast.expr.BinaryExpression
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.MapEntryExpression
 import org.codehaus.groovy.ast.expr.MapExpression
@@ -17,8 +23,11 @@ import org.codehaus.groovy.ast.stmt.Statement
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.ExpressionStatement
 import org.codehaus.groovy.classgen.VariableScopeVisitor
+import org.codehaus.groovy.classgen.asm.BinaryExpressionHelper
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.control.CompilePhase
+import org.codehaus.groovy.syntax.Token
+import org.codehaus.groovy.syntax.Types
 import org.codehaus.groovy.transform.GroovyASTTransformation
 import org.codehaus.groovy.transform.AbstractASTTransformation
 
@@ -42,37 +51,15 @@ class ClosureScopeAst extends AbstractASTTransformation {
 
         // Decomposing 'def result = check(...){}'
 
-        DeclarationExpression myExpression    = interestingStatement.expression
-        MethodCallExpression rightSide      = myExpression.rightExpression
+        DeclarationExpression result    = interestingStatement.expression
+        MethodCallExpression check      = result.rightExpression
 
-        ArgumentListExpression arguments    = rightSide.arguments
-        MapExpression mapExpression         = arguments.expressions.first()
+        ArgumentListExpression mapAndClosureArguments    = check.arguments
+        MapExpression mapExpression         = mapAndClosureArguments.expressions.first()
+        ClosureExpression closureExpression = mapAndClosureArguments.expressions.last()
 
-        Statement newCode = new AstBuilder().buildFromSpec {
-            block{
-                mapExpression.mapEntryExpressions.each { entry ->
-                    expression.add(buildAssignment(entry))
-                }
-                expression.add interestingStatement
-            }
-        }.first()
-
-        methodNode.setCode(newCode)
-
-        VariableScopeVisitor scopeVisitor = new VariableScopeVisitor(sourceUnit)
-        scopeVisitor.visitClass(methodNode.declaringClass)
+        closureExpression.variableScope = new VariableScope()
     }
 
-    public ExpressionStatement buildAssignment(MapEntryExpression entryExpression) {
-        return new AstBuilder().buildFromSpec {
-            expression {
-                declaration {
-                    variable entryExpression.keyExpression.getText()
-                    token "="
-                    constant entryExpression.valueExpression.value
-                }
-            }
-        }.first()
-    }
 
 }
