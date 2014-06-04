@@ -16,7 +16,7 @@ class ClosureScopeAstSpec extends AstBaseSpec {
         when: 'Executing the example'
             def result = instance.proof()
         then: 'The result should not use the local variable value'
-            result == 30
+            result == 31
     }
 
 

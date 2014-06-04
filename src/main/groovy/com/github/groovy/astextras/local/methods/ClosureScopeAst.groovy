@@ -2,6 +2,7 @@ package com.github.groovy.astextras.local.methods
 
 import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.ClassHelper
+import org.codehaus.groovy.ast.FieldNode
 import org.codehaus.groovy.ast.GroovyCodeVisitor
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.AnnotationNode
@@ -60,14 +61,22 @@ class ClosureScopeAst extends AbstractASTTransformation {
         ClosureExpression closureExpression = mapAndClosureArguments.expressions.last()
 
         VariableScope closureVariableScope = closureExpression.variableScope
-        VariableScope newVariableScope = new VariableScope()
+        VariableScope newVariableScope = new VariableScope(closureVariableScope.parent)
 
+        // Only those local variables not overridden in closure scope
         closureVariableScope.getReferencedLocalVariablesIterator().each { VariableExpression local ->
             if (!mapExpression.mapEntryExpressions.any { it.keyExpression.value == local.name }) {
                  newVariableScope.putReferencedLocalVariable(local)
             }
         }
 
+        // Copying all class variables
+        closureVariableScope.getReferencedClassVariablesIterator().each { FieldNode global ->
+            newVariableScope.putReferencedClassVariable(global)
+        }
+
+
+        // Changing source scope to the new one
         closureExpression.variableScope = newVariableScope
 
     }

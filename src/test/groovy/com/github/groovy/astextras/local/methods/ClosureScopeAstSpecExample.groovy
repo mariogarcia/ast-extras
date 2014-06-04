@@ -9,8 +9,12 @@ import org.codehaus.groovy.control.CompilePhase
 })
 class ClosureScopeAstSpecExample {
 
+    Integer globalVariable = 1
+
     def check(Map map, Closure execution) {
-        map.with(execution)
+        execution.delegate = map
+        execution.owner = this
+        execution()
     }
 
     @ClosureScope
@@ -19,7 +23,7 @@ class ClosureScopeAstSpecExample {
         def z = 3
         def w = 5
         def result = check(x: 5, z: 10) { // DeclarationExpression
-            x + 10 + z + w
+            x + 10 + z + w + globalVariable
         }
 
         return result // ReturnStatement
