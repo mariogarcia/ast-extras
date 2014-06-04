@@ -11,6 +11,7 @@ import org.codehaus.groovy.ast.VariableScope
 import org.codehaus.groovy.ast.builder.AstBuilder
 import org.codehaus.groovy.ast.expr.BinaryExpression
 import org.codehaus.groovy.ast.expr.Expression
+import org.codehaus.groovy.ast.expr.ExpressionTransformer
 import org.codehaus.groovy.ast.expr.MapEntryExpression
 import org.codehaus.groovy.ast.expr.MapExpression
 import org.codehaus.groovy.ast.expr.ClosureExpression
@@ -58,7 +59,17 @@ class ClosureScopeAst extends AbstractASTTransformation {
         MapExpression mapExpression         = mapAndClosureArguments.expressions.first()
         ClosureExpression closureExpression = mapAndClosureArguments.expressions.last()
 
-        closureExpression.variableScope = new VariableScope()
+        VariableScope closureVariableScope = closureExpression.variableScope
+        VariableScope newVariableScope = new VariableScope()
+
+        closureVariableScope.getReferencedLocalVariablesIterator().each { VariableExpression local ->
+            if (!mapExpression.mapEntryExpressions.any { it.keyExpression.value == local.name }) {
+                 newVariableScope.putReferencedLocalVariable(local)
+            }
+        }
+
+        closureExpression.variableScope = newVariableScope
+
     }
 
 

@@ -17,8 +17,9 @@ class ClosureScopeAstSpecExample {
     def proof() {
         def x = 2 // DeclarationExpression
         def z = 3
+        def w = 5
         def result = check(x: 5, z: 10) { // DeclarationExpression
-            x + 10 + z
+            x + 10 + z + w
         }
 
         return result // ReturnStatement
