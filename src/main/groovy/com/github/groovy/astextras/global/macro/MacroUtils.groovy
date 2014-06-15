@@ -6,4 +6,8 @@ final class MacroUtils {
         return fn(value)
     }
 
+    static Object bind(Object value) {
+        return value
+    }
+
 }
