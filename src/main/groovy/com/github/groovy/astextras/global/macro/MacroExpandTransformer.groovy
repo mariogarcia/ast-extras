@@ -45,7 +45,7 @@ class MacroExpandTransformer extends ClassCodeExpressionTransformer {
                    new ClosureExpression(
                       [new Parameter(ClassHelper.Integer_TYPE,'x')] as Parameter[],
                       new BlockStatement(
-                         [new ExpressionStatement(new ConstantExpression(3))] as Statement[],
+                         [new ExpressionStatement(new VariableExpression('x'))] as Statement[],
                          new VariableScope()
                       )
                    )
