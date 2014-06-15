@@ -4,9 +4,8 @@ class MacroExpandAstSpecExample {
 
     Integer something() {
         return let(
-            [a: 1,
-             b: { a -> a + 1}],
-             { a * b})
+            [a: 1],
+             { a -> a + 2})
     }
 
     /*

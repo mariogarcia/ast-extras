@@ -1,14 +1,19 @@
 package com.github.groovy.astextras.global.macro
 
+import static org.codehaus.groovy.ast.ClassHelper.make
+
 import org.codehaus.groovy.ast.ClassCodeExpressionTransformer
 import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.Parameter
 import org.codehaus.groovy.ast.VariableScope
+import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.expr.ArgumentListExpression
 import org.codehaus.groovy.ast.expr.BinaryExpression
 import org.codehaus.groovy.ast.expr.ClosureExpression
 import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.Expression
+import org.codehaus.groovy.ast.expr.MapEntryExpression
+import org.codehaus.groovy.ast.expr.MapExpression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.StaticMethodCallExpression
 import org.codehaus.groovy.ast.expr.VariableExpression
@@ -37,24 +42,25 @@ class MacroExpandTransformer extends ClassCodeExpressionTransformer {
 
     public Expression transform(Expression expression) {
         if (expression instanceof MethodCallExpression && expression.methodAsString == 'let') {
-            StaticMethodCallExpression exp = new StaticMethodCallExpression(
-               ClassHelper.make(MacroUtils, false),
-               'bind',
-                new ArgumentListExpression(//value, fn
-                   new ConstantExpression(3),
-                   new ClosureExpression(
-                      [new Parameter(ClassHelper.Integer_TYPE,'x')] as Parameter[],
-                      new BlockStatement(
-                         [new ExpressionStatement(new VariableExpression('x'))] as Statement[],
-                         new VariableScope()
-                      )
-                   )
-                )
-            )
 
-            VariableScopeVisitor scopeVisitor = new VariableScopeVisitor(sourceUnit)
-            scopeVisitor.visitStaticMethodCallExpression(exp)
-            return exp
+            MethodCallExpression methodCallExpression = (MethodCallExpression) expression
+            ArgumentListExpression argumentListExpression = (ArgumentListExpression) methodCallExpression.arguments
+            MapExpression mapExpression = (MapExpression) argumentListExpression.expressions.first()
+            ClosureExpression fn = (ClosureExpression) argumentListExpression.expressions.last()
+
+            return mapExpression.mapEntryExpressions.first().with { MapEntryExpression entry ->
+                Expression value = entry.valueExpression
+                ClassNode type = entry.valueExpression.type
+                String key = entry.keyExpression.value
+                StaticMethodCallExpression exp =
+                        new StaticMethodCallExpression(
+                            make(MacroUtils, false),'bind',new ArgumentListExpression(value, fn)
+                        )
+
+                VariableScopeVisitor scopeVisitor = new VariableScopeVisitor(sourceUnit)
+                scopeVisitor.visitStaticMethodCallExpression(exp)
+                return exp
+            }
 
         }
         return expression.transformExpression(this)
